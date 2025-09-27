@@ -1,0 +1,13 @@
+WEEK 1 #DAY 1 
+
+Introduction to Verilog RTL Design & Synthesis
+
+DESIGN - A actual verilog code "THE PRODUCT" we are building.
+
+TB -  This is also Verilog code, but its purpose is to "Test the design".
+a - Stimulas generator applies diffrent input combo to your design
+b - Stimulas observer ,it checks if the output from the design are what we expected.
+
+Iverilog simulates - Software tool that takes both the design & tb and complies them and runs simulation .
+
+Yoysys - Converts our RTL verilog code into actual gates from the Sky130 library.
