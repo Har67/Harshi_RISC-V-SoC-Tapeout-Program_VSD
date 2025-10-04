@@ -1,0 +1,39 @@
+PRE-SYNTHESIS SIMULATION -Testing RTL code directly
+Why Important: Verify logical functionality before hardware
+   
+               - Fast debugging
+
+                - Check algorithm correctness
+
+Signals in Waveform: 
+CLK: System clock - times all operations
+
+reset: Reset signal - initializes system to known state
+
+OUT: Analog DAC output voltage (0-3.3V)
+
+RV_TO_DAC[9:0]: 10-bit digital input to DAC (000-3FF in hex)
+
+How it works: Digital codes → DAC → Analog voltage
+
+POST-SYNTHESIS SIMULATION - Testing gate-level netlist (actual hardware gates)
+Why Important: Verify timing after synthesis
+
+              - Check real hardware behaviour
+
+               - Find timing violations
+
+Signals Will Shown:
+CLK: Same clock but with real gate delays
+
+reset: Same reset function
+
+OUT: Analog output (same)
+
+D[9:0]: Internal 10-bit data bus (equivalent to RV_TO_DAC)
+
+How it works: Same function but with actual gate delays and timing
+
+Key Difference:
+Pre-synth = Ideal timing
+Post-synth = Real hardware timing with delays ⏱️

@@ -1,0 +1,3 @@
+![Pre-Synthesis](pre_synthesis.png)
+
+![Post-Synthesis](post_synth.png)
