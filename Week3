@@ -1,0 +1,157 @@
+WHAT WE LEARNT IN WEEK 3 OVER ALL - 
+
+
+Gate-Level Simulation (GLS) & Static Timing Analysis (STA) - Comprehensive Notes
+1. Gate-Level Simulation (GLS)
+What is it?
+A simulation performed on the gate-level netlist of a design, which is the output of the synthesis process. This netlist consists of actual logic gates (AND, OR, Flip-Flops) and their interconnections from a standard cell library.
+
+It is timing-aware, using delay information from Standard Delay Format (SDF) files to model real-world timing.
+
+Why do we need it? (Purpose)
+To verify post-synthesis logic integrity: Confirms that the logical function of the design (e.g., the BabySoC with its RISC-V core, PLL, DAC) remains correct after synthesis optimizations.
+
+To perform timing-accurate validation: Catches timing violations (setup/hold) and real-world issues like glitches and metastability that are invisible in pre-synthesis RTL simulation.
+
+Critical for system integration: Ensures that all complex modules in a system (like BabySoC) interact correctly and reliably at the gate level before manufacturing.
+
+What are we doing? (Execution Plan)
+Synthesis: Using Yosys to convert the RTL design (vsdbabysoc.v, rvmyth.v) into a gate-level netlist, using the target technology library (sky130_fd_sc_hd__.lib).
+
+Netlist Generation: Writing out the synthesized netlist (vsdbabysoc.synth.v).
+
+Simulation:
+
+Compile the testbench with the gate-level netlist and SDF delays.
+
+Run the simulation to generate a Value Change Dump (VCD) waveform file.
+
+Analyze the waveform in GTKWave to debug and verify timing and functionality.
+
+Important Note: If a module is in Transaction-Level Verilog (.tlv), it must first be converted to standard Verilog (.v) using a tool like Sandpiper.
+
+2. Static Timing Analysis (STA)
+What is it?
+A method for verifying the timing performance of a digital circuit by checking all possible paths for timing violations, without requiring simulation.
+
+It is a exhaustive, mathematical analysis of delays.
+
+Why do we need it?
+Efficiency: Much faster than simulating millions of test vectors to find timing problems.
+
+Completeness: Guarantees that the design will work at a given clock frequency under all conditions, not just for the simulated test cases.
+
+Essential for Sign-off: A required step before tape-out to ensure the chip will meet timing in silicon.
+
+3. Core STA Concepts
+Timing Path
+What: A path in the circuit between a startpoint (clock pin of a flip-flop or an input port) and an endpoint (data pin of a flip-flop or an output port).
+
+Why: STA analyzes every possible timing path to ensure signals propagate within the clock cycle.
+
+Arrival Time (AT)
+What: The time a signal actually arrives at an endpoint. It's the sum of all gate and interconnect delays from the startpoint.
+
+Why: Used to calculate if a signal meets its timing constraints.
+
+Required Arrival Time (RAT)
+What: The latest time a signal is allowed to arrive at an endpoint for the circuit to function correctly. It is derived from clock period and library constraints.
+
+Why: The "deadline" that the arrival time is compared against.
+
+Slack
+What: The difference between the Required Time and the Arrival Time. Slack = RAT - AT.
+
+Why: It quantifies the timing margin.
+
+Positive Slack: Signal arrives earlier than required → Good.
+
+Negative Slack: Signal arrives later than required → Timing Violation.
+
+Types:
+
+Setup Slack (Max Slack): Checks that a signal is stable before the next clock edge.
+
+Hold Slack (Min Slack): Checks that a signal remains stable after the current clock edge.
+
+4. Types of Timing Analysis
+STA is performed on different path types within the design:
+
+Reg-to-Reg (reg2reg): Path from a flip-flop to another flip-flop.
+
+In-to-Reg (in2reg): Path from a primary input to a flip-flop.
+
+Reg-to-Out (reg2out): Path from a flip-flop to a primary output.
+
+In-to-Out (in2out): Path combinational path from an input to an output.
+
+Clock Gating: Analysis of circuits that gate the clock to save power.
+
+Recovery/Removal: Analysis for asynchronous reset/preset signals relative to the clock.
+
+Data-to-Data: Checks timing between two data signals.
+
+5. Physical & Transistor-Level Effects
+Slew/Transition Time
+What: The rise or fall time of a signal. A slow slew rate can cause timing and noise issues.
+
+Why: High slew can increase delay and power consumption. STA checks for max/min slew violations.
+
+Load Analysis
+What: Analyzing the capacitive load (Fanout) a gate drives.
+
+Why: Ensures no gate is overloaded, which would cause excessive delay and slew.
+
+Clock Analysis
+Clock Skew:
+
+What: The difference in arrival times of the clock signal at different flip-flops.
+
+Why: Excessive skew can eat into the available time for data propagation (reduce slack).
+
+Transistor-Level Timing
+What: Analyzing delays at the fundamental transistor level.
+
+Why: To calculate fundamental parameters of standard cells (like flip-flops).
+
+Key Calculations:
+
+Setup Time: Min time data must be stable before the clock edge. Calculated from inverter and transmission gate delays.
+
+Clock-to-Q Delay: Time from the clock edge until the output is available. Determines flip-flop speed.
+
+Hold Time: Min time data must be stable after the clock edge. (Can often be zero in modern cells).
+
+6. Dealing with Variations & Advanced Analysis
+Sources of Variation
+Etching Variations: Cause changes in interconnect dimensions, affecting resistance (R) and capacitance (C), hence delay (RC delay).
+
+Oxide Thickness (tₒₓ) Variations: Alters transistor drive current (Iᴅ), directly impacting gate delay (tₚᴅ).
+
+On-Chip Variation (OCV)
+What: The recognition that delay of the same cell/wire can be different at different locations on the chip due to process, voltage, and temperature (PVT) variations.
+
+Why: To add realistic timing margins. STA uses derating factors to slow down or speed up paths during analysis.
+
+Setup Check: Use slow derate for launch path, fast derate for capture path.
+
+Hold Check: Use fast derate for launch path, slow derate for capture path.
+
+Pessimism Removal
+What: Advanced techniques (CRPR - Clock Reconvergence Pessimism Removal) that identify and remove excessive timing margin (pessimism) caused by OCV when clock paths are correlated.
+
+Why: To achieve more realistic and less pessimistic timing results, avoiding over-design.
+
+7. Signal Integrity & Validation
+Eye Diagram & Jitter
+Eye Diagram:
+
+What: A visual tool formed by overlaying many digital signal cycles. The "eye" opening represents the margin for error-free data sampling.
+
+Why: To assess signal quality, noise, and timing jitter in high-speed interfaces.
+
+Jitter:
+
+What: The variation in the timing of signal edges from their ideal positions.
+
+Why: Jitter reduces the eye opening and can lead to bit errors. It must be accounted for in timing budgets.
