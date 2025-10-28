@@ -1,0 +1,40 @@
+🏗️ Floorplanning
+
+Floorplanning defines the physical canvas for the chip — deciding how much space the design needs, where major blocks go, and how power and signals will be distributed.
+This step transforms the synthesized netlist into a spatial layout framework that the placer and router can work with.
+
+🔹 Key Considerations:
+Die Size: Determines the total silicon area of the chip.
+Core Utilization: Typically 70–85%; balancing area efficiency with routing flexibility.
+Macro Placement: Large pre-designed modules (e.g., memories, PLLs) are positioned to reduce long interconnects.
+I/O Pins: Positioned around the die boundary to interface with external connections.
+Aspect Ratio: Maintains the balance between chip width and height for manufacturability.
+
+🔹 Physical Support Structures:
+Tap Cells: Ensure electrical well-tie integrity.
+Endcap Cells: Protect rows from edge effects.
+PDN (Power Distribution Network): Establishes a grid of metal straps for uniform power delivery.
+Blockages: Define regions to avoid routing or placement.
+Floorplanning is like city planning — it allocates neighborhoods (macros, logic regions) and roads (routing channels) before construction begins.
+
+🧩 Placement
+Once the floorplan is set, the placement stage arranges all the standard cells within the defined core area.
+
+🎯 Main Goals:
+Optimize Wirelength: Place connected cells close to each other to minimize delay and power.
+Ensure Timing Closure: Respect setup/hold constraints and maintain logical connectivity.
+Reduce Congestion: Evenly distribute cells to simplify the routing stage.
+
+🪜 Stages of Placement:
+Global Placement
+Performs rough optimization to minimize total interconnect length.
+Cells may overlap at this stage as the algorithm prioritizes wirelength.
+Uses analytical or partitioning-based algorithms.
+
+Detailed Placement
+Legalizes placement by snapping cells to rows and removing overlaps.
+Maintains alignment with the power grid.
+
+Refines local adjustments to further optimize timing.
+
+After placement, OpenROAD generates reports for timing, wirelength, and congestion — ensuring that the design is physically feasible before moving on to Clock Tree Synthesis (CTS) and Routing.
